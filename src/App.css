@@ -1,0 +1,98 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+}
+
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  padding: 20px;
+
+  height: 100vh;
+}
+
+
+.editor,
+.preview {
+
+  background: white;
+
+  padding: 20px;
+
+  border-radius: 12px;
+
+  overflow: auto;
+}
+
+
+textarea {
+
+  width: 100%;
+
+  height: calc(100% - 50px);
+
+  resize: none;
+
+  padding: 15px;
+
+  font-size: 16px;
+
+  border-radius: 8px;
+
+  border: 1px solid #ccc;
+}
+
+
+.title {
+  color: #2563eb;
+}
+
+
+.inline-code {
+
+  background: #eee;
+
+  padding: 3px 6px;
+
+  border-radius: 5px;
+}
+
+
+.quote {
+
+  border-left: 5px solid #2563eb;
+
+  padding-left: 15px;
+
+  color: #555;
+}
+
+
+table {
+
+  border-collapse: collapse;
+
+  width: 100%;
+
+}
+
+
+th,
+td {
+
+  border: 1px solid #ddd;
+
+  padding: 8px;
+
+}
+
+
+th {
+
+  background: #eee;
+
+}
