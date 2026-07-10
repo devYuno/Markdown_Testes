@@ -1,155 +1,133 @@
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
-import "./App.css";
+import { useState } from 'react'
+import '@mdxeditor/editor/style.css'
 
+import {
+  MDXEditor,
+  headingsPlugin,
+  listsPlugin,
+  quotePlugin,
+  tablePlugin,
+  linkPlugin,
+  codeBlockPlugin,
+  codeMirrorPlugin,
+  markdownShortcutPlugin,
+  toolbarPlugin,
+  UndoRedo,
+  BoldItalicUnderlineToggles,
+  ListsToggle,
+  BlockTypeSelect,
+  CreateLink,
+  InsertTable,
+  InsertCodeBlock,
+  ChangeCodeMirrorLanguage,
+  ConditionalContents
+} from '@mdxeditor/editor'
 
-const defaultMarkdown = `
-# Meu Markdown
-
-Texto com **negrito**, *itálico* e ~~riscado~~.
-
----
-
-## Lista
-
-- React
-- TypeScript
-- Markdown
-
-
-## Checklist
-
-- [x] Instalar react-markdown
-- [x] Criar preview
-- [ ] Publicar projeto
-
-
-## Tabela
-
-| Tecnologia | Uso |
-|---|---|
-| React | Frontend |
-| TS | Tipagem |
-
-
-## Código
-
-\`\`\`tsx
 function App() {
-  return (
-    <h1>Hello World</h1>
-  );
-}
-\`\`\`
+  const [content, setContent] = useState(`# Aula de Programação
 
-> Exemplo de bloco de citação.
+Bem-vindo ao editor.
 
-[Abrir Google](https://google.com)
-`;
+## Exemplo
 
-
-export default function App() {
-
-  const [markdown, setMarkdown] =
-    useState(defaultMarkdown);
-
+Selecione um texto e clique em **Negrito**.
+`)
 
   return (
-    <main className="container">
+    <div
+      style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '2rem'
+      }}
+    >
+      <h1>Editor de Materiais</h1>
 
-      <section className="editor">
-        <h2>Editor</h2>
-
-        <textarea
-          value={markdown}
-          onChange={(e) =>
-            setMarkdown(e.target.value)
-          }
-        />
-      </section>
-
-
-      <section className="preview">
-
-        <h2>Preview</h2>
-
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-
-          components={{
-
-            h1({ children }) {
-              return (
-                <h1 className="title">
-                  {children}
-                </h1>
-              );
-            },
-
-
-            a({ href, children }) {
-              return (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {children}
-                </a>
-              );
-            },
-
-
-            blockquote({ children }) {
-              return (
-                <blockquote className="quote">
-                  {children}
-                </blockquote>
-              );
-            },
-
-
-            code({
-              children,
-              className
-            }) {
-
-              const match =
-                /language-(\w+)/
-                .exec(className || "");
-
-
-              return match ? (
-
-                <SyntaxHighlighter
-                  style={tomorrow}
-                  language={match[1]}
-                  PreTag="div"
-                >
-                  {String(children)}
-                </SyntaxHighlighter>
-
-              ) : (
-
-                <code className="inline-code">
-                  {children}
-                </code>
-
-              );
+      <MDXEditor
+        markdown={content}
+        onChange={setContent}
+        plugins={[
+          headingsPlugin(),
+          listsPlugin(),
+          quotePlugin(),
+          tablePlugin(),
+          linkPlugin(),
+          codeBlockPlugin({
+            defaultCodeBlockLanguage: 'csharp'
+          }),
+          codeMirrorPlugin({
+            codeBlockLanguages: {
+              csharp: 'C#',
+              javascript: 'JavaScript',
+              typescript: 'TypeScript',
+              html: 'HTML',
+              css: 'CSS',
+              sql: 'SQL'
             }
+          }),
+          markdownShortcutPlugin(),
+          toolbarPlugin({
+            toolbarContents: () => (
+              <>
+                <UndoRedo />
+                <BoldItalicUnderlineToggles />
+                <BlockTypeSelect />
+                <ListsToggle />
+                <CreateLink />
+                <InsertTable />
 
-          }}
+                <ConditionalContents
+                  options={[
+                    {
+                      when: (editor) =>
+                        editor?.editorType === 'codeblock',
+                      contents: () => (
+                        <ChangeCodeMirrorLanguage />
+                      )
+                    },
+                    {
+                      fallback: () => (
+                        <InsertCodeBlock />
+                      )
+                    }
+                  ]}
+                />
+              </>
+            )
+          })
+        ]}
+      />
 
-        >
-          {markdown}
+      <button
+        style={{
+          marginTop: '1rem',
+          padding: '0.75rem 1.5rem'
+        }}
+        onClick={() => {
+          console.log(content)
 
-        </ReactMarkdown>
+          // Aqui você envia para a API
+          // fetch('/api/materials', ...)
+        }}
+      >
+        Salvar Material
+      </button>
 
-      </section>
+      <h2 style={{ marginTop: '2rem' }}>
+        Markdown Gerado
+      </h2>
 
-    </main>
-  );
+      <pre
+        style={{
+          padding: '1rem',
+          background: '#f5f5f5',
+          overflow: 'auto'
+        }}
+      >
+        {content}
+      </pre>
+    </div>
+  )
 }
+
+export default App
