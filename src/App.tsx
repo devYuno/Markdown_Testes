@@ -33,6 +33,28 @@ Bem-vindo ao editor.
 Selecione um texto e clique em **Negrito**.
 `)
 
+  const editorPlugins = [
+    headingsPlugin(),
+    listsPlugin(),
+    quotePlugin(),
+    tablePlugin(),
+    linkPlugin(),
+    codeBlockPlugin({
+      defaultCodeBlockLanguage: 'csharp'
+    }),
+    codeMirrorPlugin({
+      codeBlockLanguages: {
+        csharp: 'C#',
+        javascript: 'JavaScript',
+        typescript: 'TypeScript',
+        html: 'HTML',
+        css: 'CSS',
+        sql: 'SQL'
+      }
+    }),
+    markdownShortcutPlugin()
+  ]
+
   return (
     <div
       style={{
@@ -43,60 +65,72 @@ Selecione um texto e clique em **Negrito**.
     >
       <h1>Editor de Materiais</h1>
 
-      <MDXEditor
-        markdown={content}
-        onChange={setContent}
-        plugins={[
-          headingsPlugin(),
-          listsPlugin(),
-          quotePlugin(),
-          tablePlugin(),
-          linkPlugin(),
-          codeBlockPlugin({
-            defaultCodeBlockLanguage: 'csharp'
-          }),
-          codeMirrorPlugin({
-            codeBlockLanguages: {
-              csharp: 'C#',
-              javascript: 'JavaScript',
-              typescript: 'TypeScript',
-              html: 'HTML',
-              css: 'CSS',
-              sql: 'SQL'
-            }
-          }),
-          markdownShortcutPlugin(),
-          toolbarPlugin({
-            toolbarContents: () => (
-              <>
-                <UndoRedo />
-                <BoldItalicUnderlineToggles />
-                <BlockTypeSelect />
-                <ListsToggle />
-                <CreateLink />
-                <InsertTable />
+      <div
+        style={{
+          display: 'flex',
+          gap: '1rem'
+        }}
+      >
 
-                <ConditionalContents
-                  options={[
-                    {
-                      when: (editor) =>
-                        editor?.editorType === 'codeblock',
-                      contents: () => (
-                        <ChangeCodeMirrorLanguage />
-                      )
-                    },
-                    {
-                      fallback: () => (
-                        <InsertCodeBlock />
-                      )
-                    }
-                  ]}
-                />
-              </>
-            )
-          })
-        ]}
-      />
+        {/* EDITOR */}
+        <div style={{ flex: 1 }}>
+          <h2>Editar</h2>
+
+          <MDXEditor
+            markdown={content}
+            onChange={setContent}
+            plugins={[
+              ...editorPlugins,
+
+              toolbarPlugin({
+                toolbarContents: () => (
+                  <>
+                    <UndoRedo />
+                    <BoldItalicUnderlineToggles />
+                    <BlockTypeSelect />
+                    <ListsToggle />
+                    <CreateLink />
+                    <InsertTable />
+
+                    <ConditionalContents
+                      options={[
+                        {
+                          when: (editor) =>
+                            editor?.editorType === 'codeblock',
+
+                          contents: () => (
+                            <ChangeCodeMirrorLanguage />
+                          )
+                        },
+                        {
+                          fallback: () => (
+                            <InsertCodeBlock />
+                          )
+                        }
+                      ]}
+                    />
+                  </>
+                )
+              })
+            ]}
+          />
+        </div>
+
+
+        {/* PREVIEW */}
+        <div style={{ flex: 1 }}>
+          <h2>Visualização</h2>
+
+          <MDXEditor
+          key={content}
+            markdown={content}
+            readOnly
+            plugins={editorPlugins}
+          />
+        </div>
+
+      </div>
+
 
       <button
         style={{
@@ -105,13 +139,11 @@ Selecione um texto e clique em **Negrito**.
         }}
         onClick={() => {
           console.log(content)
-
-          // Aqui você envia para a API
-          // fetch('/api/materials', ...)
         }}
       >
         Salvar Material
       </button>
+
 
       <h2 style={{ marginTop: '2rem' }}>
         Markdown Gerado
@@ -126,6 +158,7 @@ Selecione um texto e clique em **Negrito**.
       >
         {content}
       </pre>
+
     </div>
   )
 }
